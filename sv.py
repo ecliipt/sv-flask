@@ -1,9 +1,6 @@
 import asyncio
 from playwright.async_api import async_playwright
-import rich
 import json
-
-print = rich.print
 
 maths_table_ig = ['=', '-', '/', '*', '+', '%', '**', '//']
 
