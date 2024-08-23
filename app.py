@@ -4,6 +4,8 @@ import asyncio
 import json
 #import sv
 
+import logging
+
 app = Flask(__name__)
 
 # playwright injection system
@@ -148,6 +150,7 @@ def hello_world():
 @app.route('/request', methods=['POST'])
 def create_user():
     user_data = request.get_json()
+    logging.info(user_data['input'])
     response = asyncio.run(get_response(query=user_data['input']))
     return jsonify(response), 201
 
