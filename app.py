@@ -85,15 +85,16 @@ def Lower(s):
 
 async def get_response(query):
     async with async_playwright() as p:
+        print("launching browser...")
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         await page.goto("https://web.szl.ai/problem")
         await page.wait_for_load_state("networkidle")
-        
-        print('Typing query:', query)
+        print("browser online, network status: idle")
+        print("[Interact] Query:", query)
         await page.type("body", query)
         
-        print('Pressing enter')
+        print('[Interact] Submitting form')
         button = await page.query_selector(".flex.flex-row.items-center.ml-2 svg[data-testid='SendRoundedIcon']")
         await button.click()
         
@@ -101,7 +102,7 @@ async def get_response(query):
         
         while True:
             try:
-                print('Clicking reveal step')
+                print('[Interact] Clicking new reveal step')
                 await page.click('div.flex.m-\\[27px\\] button:has-text("Reveal step")', timeout=2500)
             except:
                 break
@@ -127,7 +128,7 @@ async def get_response(query):
                 step_content = await all_elements[i-1].text_content()
                 steps[Lower(step_content)] = Lower(content)
         
-        print("Steps and their content:")
+        print("Processing steps...")
         processed_steps = {}
         for step, content in steps.items():
             if set(step + content) & set(maths_table_ig):
@@ -137,6 +138,7 @@ async def get_response(query):
             processed_steps[step] = content
         
         await browser.close()
+        print("browser terminated, success")
         return json.dumps(processed_steps, indent=2)
 ############################################
 @app.route('/')
