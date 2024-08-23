@@ -27,4 +27,4 @@ COPY app.py .
 
 ENV DISPLAY=:99
 
-CMD Xvfb :99 -screen 0 1024x768x16 & gunicorn app:app --timeout 90 & python3 app.py
+CMD Xvfb :99 -screen 0 1024x768x16 & gunicorn app:app --timeout 150 & python3 app.py
