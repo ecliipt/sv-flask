@@ -139,8 +139,11 @@ async def get_response(query):
         await browser.close()
         return json.dumps(processed_steps, indent=2)
 ############################################
+@app.route('/')
+def hello_world():
+    return 'hello :^)'
 
-@app.route('/create-user', methods=['POST'])
+@app.route('/request', methods=['POST'])
 def create_user():
     user_data = request.get_json()
     response = asyncio.run(get_response(query=user_data['input']))
