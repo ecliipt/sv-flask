@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from playwright.async_api import async_playwright
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 import asyncio
 import json
 #import sv
@@ -99,6 +100,24 @@ async def get_response(query):
         print('[Interact] Submitting form')
         button = await page.query_selector(".flex.flex-row.items-center.ml-2 svg[data-testid='SendRoundedIcon']")
         await button.click()
+
+        original_url = page.url
+        try:
+            async with page.expect_navigation(timeout=2500, wait_until="domcontentloaded"):
+                pass
+            print("Navigation successful; proceeding with page.url:", page.url)
+        except PlaywrightTimeoutError:
+            print("Timed out waiting for navigation")
+            await browser.close()
+            return json.dumps({'error': 'Navigation timed out || Not enough information provided'})
+
+        if page.url != original_url:
+            print("Page refreshed, waiting for it to stabilize")
+            print("Page URL:", page.url)
+        else:
+            print("No navigation detected")
+            await browser.close()
+            return json.dumps({'error': 'Failed to reload page || Not enough information provided'})
         
         await page.wait_for_selector('div.flex.m-\\[27px\\]')
         
